@@ -208,6 +208,22 @@ public class TwoDimMatrice {
         return new TwoDimMatrice(newMatrice);
     }
 
+    public int rank() {
+        int rank = 0;
+        if (forwardElimination(matrice, 0, 0)) {
+            outer:
+            for (int r = 0; r < numRows; r++) {
+                for (int c = 0; c < numCols; c++) {
+                    if (matrice[r][c] != 0) {
+                        rank++;
+                        continue outer;
+                    }
+                }
+            }
+        } else throw new RuntimeException("Ranks aren't defined for non squared matrices!");
+        return rank;
+    }
+
     public void print() {
         for (int i = 0; i < numRows; i++) {
             System.out.println();
@@ -215,6 +231,7 @@ public class TwoDimMatrice {
                 System.out.print(matrice[i][j] + " ");
             }
         }
+        System.out.println();
     }
 
     public static TwoDimMatrice I(int n) {
