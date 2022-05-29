@@ -25,17 +25,21 @@ public class TwoDimMatrice {
         matrice = newMatrice;
         numRows = newMatrice.length;
         numCols = newMatrice[0].length;
-        shape = new int[] {numRows, numCols};
+        shape = new int[] { numRows, numCols };
     }
 
-    public boolean forwardElimination(double[][] mat, int row, int col) {
+    public boolean forwardElimination(boolean backEliminate) {
+        return forwardElimination(copyMatrice(matrice), 0, 0, backEliminate);
+    }
+
+    private boolean forwardElimination(double[][] mat, int row, int col, boolean backEliminate) {
         int M = mat.length;
         int N = mat[0].length;
 
         // matrice isn't invertible
         if (M > N || M < N) return false;
 
-        if (col >= N && row >= M) {
+        if (col >= N && row >= M && backEliminate) {
             return backElimination(mat, row - 1, col - 1);
         }
 
@@ -69,7 +73,7 @@ public class TwoDimMatrice {
                 mat[r][c] -= mat[row][c] * fact;
             }
         }
-        return forwardElimination(mat, row + 1, col + 1);
+        return forwardElimination(mat, row + 1, col + 1, backEliminate);
     }
 
     public boolean backElimination(double[][] mat, int row, int col) {
@@ -210,11 +214,12 @@ public class TwoDimMatrice {
 
     public int rank() {
         int rank = 0;
-        if (forwardElimination(matrice, 0, 0)) {
+        double[][] copy = copyMatrice(matrice);
+        if (forwardElimination(copy, 0, 0, true)) {
             outer:
             for (int r = 0; r < numRows; r++) {
                 for (int c = 0; c < numCols; c++) {
-                    if (matrice[r][c] != 0) {
+                    if (copy[r][c] != 0) {
                         rank++;
                         continue outer;
                     }
@@ -254,6 +259,16 @@ public class TwoDimMatrice {
             }
         }
         return new TwoDimMatrice(m);
+    }
+
+    public static double[][] copyMatrice(double[][] mat) {
+        double[][] m = new double[mat.length][mat[0].length];
+        for (int r = 0; r < m.length; r++) {
+            for (int c = 0; c < m[r].length; c++) {
+                m[r][c] = mat[r][c];
+            }
+        }
+        return m;
     }
 
     public int[] getShape() {
